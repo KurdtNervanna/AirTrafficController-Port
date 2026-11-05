@@ -8,7 +8,9 @@ Air Traffic Controller 5.03 (Walter J. Biess, 1993) running natively on Windows,
 | macOS 10.13+ (Apple silicon and Intel) | `ATC-macOS-universal.dmg` |
 | Linux x86_64 | `ATC-Linux-x86_64.AppImage` or `ATC-Linux-x86_64.tar.gz` |
 
-**Game files are not included.** You need your own copy of the Air Traffic Controller 5.03 application and a System 6 System file (for the classic Mac fonts). On first launch the game asks for the folder that holds them and remembers it. See README.md for the accepted formats.
+**New in 1.1.0: no System file needed.** The port now has its own built-in fonts, drawn from scratch with the same character widths as the classic Mac fonts, so the only file you need is the game itself. A System 6 System file is still used if you add one, for Apple's original fonts.
+
+**The game is not included.** You need your own copy of the Air Traffic Controller 5.03 application (freeware). On first launch the program asks for the folder that holds it and remembers it. See README.md for the accepted formats.
 
 **macOS:** the app is not notarized. The first time, right-click it and choose Open (or run `xattr -dr com.apple.quarantine "/Applications/Air Traffic Controller.app"`).
 

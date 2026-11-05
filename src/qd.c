@@ -545,7 +545,7 @@ void qd_trap(unsigned word, void *tv){
                    else if (!plat_stricmp(n,"Monaco")) f = 4; else if (!plat_stricmp(n,"Venice")) f = 5; else if (!plat_stricmp(n,"Times")) f = 20;
                    else if (!plat_stricmp(n,"Helvetica")) f = 21; else if (!plat_stricmp(n,"Courier")) f = 22;
                    ww(ARGL(0), (unsigned)f); POP(8); } break;
-    case 0xA902: { unsigned len; RETB(4, rs_sysdata(0x464F4E54u, ARGW(2) * 128 + ARGW(0), &len) != 0); } break;   /* RealFont */
+    case 0xA902: { unsigned len; RETB(4, font_data(ARGW(2) * 128 + ARGW(0), &len) != 0); } break;   /* RealFont */
     case 0xA903: POP(2); break;                                                   /* SetFontLock */
     case 0xA901: RETL(4, 0); break;                                               /* FMSwapFont */
     /* pen */

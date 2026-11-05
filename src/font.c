@@ -1,5 +1,7 @@
 /* Font Manager: draws the classic Mac bitmap fonts ('FONT' resources) from the
- * System file, so text looks exactly as it did (Chicago, Geneva, Monaco...).
+ * System file, so text looks exactly as it did (Chicago, Geneva, Monaco...). Without
+ * a System file it uses the built-in stand-ins (src/fonts_builtin.c), drawn with the
+ * same widths so the layout is identical.
  * Font ID = family * 128 + point size; a missing size falls back to the nearest
  * size of the same family, then to Geneva / Chicago.
  */
@@ -12,8 +14,18 @@ typedef struct {
 
 static unsigned be16(const unsigned char *p){ return (unsigned)(p[0]<<8 | p[1]); }
 
+/* a FONT resource: the System file's if there is one, else the built-in set
+   (fonts/*.txt); ATC_BUILTIN_FONTS=1 always uses the built-in set */
+const unsigned char *font_data(int id, unsigned *len){
+    static int builtin_only = -1;
+    const unsigned char *d = 0;
+    if (builtin_only < 0) builtin_only = getenv("ATC_BUILTIN_FONTS") != 0;
+    if (!builtin_only) d = rs_sysdata(0x464F4E54u, id, len);
+    return d ? d : font_builtin(id, len);
+}
+
 static int parse(int resid, Font *f){
-    unsigned len; const unsigned char *d = rs_sysdata(0x464F4E54u, resid, &len);   /* 'FONT' */
+    unsigned len; const unsigned char *d = font_data(resid, &len);
     int n, owt;
     memset(f, 0, sizeof *f);
     if (!d || len < 26) return 0;
@@ -42,7 +54,7 @@ static const Font *get_font(int fam, int size){
             int s = i < 0 ? size : g_sizes[i], d = s - size; unsigned len;
             if (d < 0) d = -d * 2 + 1;            /* prefer larger over smaller at equal distance */
             id = f * 128 + s;
-            if (rs_sysdata(0x464F4E54u, id, &len) && d < bestd){ bestd = d; best = id; }
+            if (font_data(id, &len) && d < bestd){ bestd = d; best = id; }
         }
         if (best >= 0) break;
     }

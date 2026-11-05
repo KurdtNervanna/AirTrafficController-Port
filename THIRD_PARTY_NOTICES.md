@@ -1,7 +1,8 @@
 # Licences and notices
 
-The MIT licence in [LICENSE](LICENSE) covers the code of this port: everything in this
-repository except the components below, which keep their own terms.
+The MIT licence in [LICENSE](LICENSE) covers the code of this port and its built-in
+fonts (Tower 12, Radar 9 and Radar 12 in `fonts/`, drawn from scratch for this project):
+everything in this repository except the components below, which keep their own terms.
 
 ## Not included: the game and the Macintosh fonts
 
@@ -10,8 +11,10 @@ repository except the components below, which keep their own terms.
   game was released as freeware; its own terms (shown in its About box) allow free,
   non-commercial distribution together with its manual. Those terms, not this project's
   licence, apply to the game.
-* **Macintosh system fonts** (Chicago, Geneva, Monaco) © Apple. They are not included; the
-  program reads them at run time from a System file supplied by the player.
+* **Macintosh system fonts** (Chicago, Geneva, Monaco) © Apple. They are not included. If
+  the player supplies a System file, the program reads them from it at run time;
+  otherwise it uses its own built-in fonts. Only the fonts' advance widths and line
+  metrics were matched, so that text lays out the same; the glyphs are original.
 
 The screenshots in `docs/screenshots` show the game running in this port, for
 illustration.

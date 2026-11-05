@@ -2,8 +2,8 @@
  *
  *   ATC [game folder]
  *
- * The game folder holds the application's resource fork (ATC.rsrc) and a System 6
- * System file (System.rsrc, for its fonts); see find_game. Settings and documents go
+ * The game folder holds the application's resource fork (ATC.rsrc) and, optionally,
+ * a System 6 System file (System.rsrc) for Apple's fonts; see find_game. Settings and documents go
  * to a "save" folder: beside the game folder on Windows, in the user's data folder
  * on macOS and Linux.
  */
@@ -91,8 +91,9 @@ void hle_idle(int sleep_ms){
 
 /* ---- launch ---------------------------------------------------------------------- */
 /* A game folder holds the application's resource fork (any file containing the
-   'Watc' signature resource: raw fork, AppleDouble or MacBinary) and a System file
-   (any file with 'FONT' resources). ATC.rsrc / System.rsrc are tried first. */
+   'Watc' signature resource: raw fork, AppleDouble or MacBinary) and, optionally, a
+   System file (any file with 'FONT' resources) for Apple's own fonts; without one
+   the built-in fonts are used. ATC.rsrc / System.rsrc are tried first. */
 static int scan_game(const char *dir, char *app, char *sys){
     char p[1024], n[512]; int k;
     app[0] = sys[0] = 0;
@@ -106,7 +107,7 @@ static int scan_game(const char *dir, char *app, char *sys){
         if (!app[0] && rs_file_has(p, 0x57617463u)) strcpy(app, p);              /* 'Watc' */
         else if (!sys[0] && rs_file_has(p, 0x464F4E54u)) strcpy(sys, p);         /* 'FONT' */
     }
-    return app[0] && sys[0];
+    return app[0] != 0;
 }
 static int find_game(const char *arg, char *dir, char *app, char *sys){
     char exe[600], user[600], c[1024]; int k; FILE *f;
@@ -132,10 +133,11 @@ static int find_game(const char *arg, char *dir, char *app, char *sys){
 static int ask_game_folder(char *dir, char *app, char *sys){
     char user[600], c[1024], pick[1024]; FILE *f;
     host_message("Air Traffic Controller",
-        "Choose the folder that holds your game files:\n\n"
-        "  - the Air Traffic Controller 5.03 application (its resource fork: ATC.rsrc, or the\n"
-        "    AppleDouble/MacBinary file from unpacking the original archive), and\n"
-        "  - a System 6 \"System\" file (raw fork, AppleDouble or MacBinary), whose fonts the game uses.\n\n"
+        "Choose the folder that holds the Air Traffic Controller 5.03 application: its\n"
+        "resource fork (ATC.rsrc), or the AppleDouble or MacBinary file from unpacking\n"
+        "the original archive.\n\n"
+        "Optional: a System 6 \"System\" file in the same folder makes the game use Apple's\n"
+        "original fonts instead of the built-in ones.\n\n"
         "The folder is remembered.");
     while (host_pick_folder(pick, sizeof pick)){
         if (scan_game(pick, app, sys)){
@@ -145,8 +147,7 @@ static int ask_game_folder(char *dir, char *app, char *sys){
             snprintf(dir, 600, "%s", pick);
             return 1;
         }
-        host_message("Air Traffic Controller", app[0] ? "That folder has the game but no System file (for the fonts)."
-                                                       : "That folder does not hold the Air Traffic Controller 5.03 application.");
+        host_message("Air Traffic Controller", "That folder does not hold the Air Traffic Controller 5.03 application.");
     }
     return 0;
 }
@@ -223,7 +224,7 @@ int main(int argc, char **argv){
     mm_init();
     init_lowmem();
 
-    if (!rs_open_system(sys)) fatal("Could not read the System file %s.", sys);
+    if (sys[0] && !rs_open_system(sys)) logf_("[rsrc] could not read the System file %s; using the built-in fonts\n", sys);
     if (!rs_open_app(app, overlay)) fatal("Could not read %s.", app);
     load_segments();
 

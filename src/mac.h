@@ -201,6 +201,8 @@ static __inline int rv_in(const RgnView *v, int x, int y){
 /* fonts (font.c) */
 typedef struct { int ascent, descent, widMax, leading, height; } FontMetrics;
 int      font_metrics(int font, int size, int face, FontMetrics *m);
+const unsigned char *font_data(int id, unsigned *len);      /* System file FONT, else built-in */
+const unsigned char *font_builtin(int id, unsigned *len);   /* fonts_builtin.c */
 int      font_char_width(int font, int size, int face, int ch);
 /* draws one char with its origin at (h,v); calls plot(x,y) for each set pixel */
 int      font_draw_char(int font, int size, int face, int ch, int h, int v, void (*plot)(int x, int y, void *ctx), void *ctx);

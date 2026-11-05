@@ -38,16 +38,16 @@ Get the latest build from the [Releases](../../releases/latest) page.
 | **Linux** x86_64 | `ATC-Linux-x86_64.AppImage` or `ATC-Linux-x86_64.tar.gz` | `chmod +x ATC-Linux-x86_64.AppImage` and run it, or unpack the tarball and run `./atc`. Opening and saving schedules uses `zenity` or `kdialog`. |
 
 **The downloads do not contain the game itself** — see the next section. On first launch
-the program asks for the folder that holds the game files and remembers it.
+the program asks for the folder that holds it and remembers it.
 
 ## Getting the game files
 
-You need two files from the classic Mac world:
+You need one file from the classic Mac world, and can add a second:
 
-| File | Where it comes from |
+| File | |
 |---|---|
-| **Air Traffic Controller 5.03** | The application itself. It was released as freeware in 1992–93 and is available from classic Macintosh software archives (it is usually distributed as `Air Traffic Controller 5.03.sit`). |
-| **A System 6 System file** | The *System* file from any System 6 installation (6.0.x). Only its bitmap fonts — Chicago, Geneva and Monaco — are used, so text looks exactly as it did. |
+| **Air Traffic Controller 5.03** (required) | The application itself. It was released as freeware in 1992–93 and is available from classic Macintosh software archives (it is usually distributed as `Air Traffic Controller 5.03.sit`). |
+| **A System 6 System file** (optional) | The *System* file from any System 6 installation (6.0.x). If it is in the same folder, the game uses Apple's original bitmap fonts from it. Without it, the port uses its own built-in fonts (see [Fonts](#fonts)). |
 
 Classic Mac files keep their contents in a *resource fork*, which modern systems don't
 store natively. Any of these three forms works, and the names don't matter — the program
@@ -65,7 +65,7 @@ unar -k visible "Air Traffic Controller 5.03.sit"
 # -> "Air Traffic Controller 5.03/Air Traffic Controller 5.03.rsrc"  (AppleDouble: use it as is)
 ```
 
-**A System file from a disk image** (with [hfsutils](https://www.mars.org/home/rob/proj/hfs/)):
+**A System file from a disk image** (optional; with [hfsutils](https://www.mars.org/home/rob/proj/hfs/)):
 
 ```sh
 hmount "System Tools.dsk"
@@ -77,9 +77,20 @@ humount
 From an emulator such as Mini vMac or Basilisk II you can also export both files as
 MacBinary. `tools/rfork.py extract <in> <out>` converts any of the forms to a raw fork.
 
-Put both files in one folder and start the game. It looks, in order, in a folder named on
+Put the file (or both) in one folder and start the game. It looks, in order, in a folder named on
 the command line, in `$ATC_GAME`, in a `game` folder next to the program, in
 `<user data folder>/game`, and in the folder you picked last time.
+
+### Fonts
+
+The game draws its text in three classic Mac bitmap fonts: Chicago 12 (menus, dialogs,
+buttons), Monaco 9 (the schedule) and Monaco 12 (clock, score, wind). The port includes
+its own stand-ins for them — **Tower 12**, **Radar 9** and **Radar 12** — drawn from
+scratch for this project as pixel art in [`fonts/`](fonts) and compiled into the program
+by `tools/build_fonts.py`. Every character has exactly the advance width of the font it
+replaces, so all text lands on the same pixels and the layout is unchanged. With a System
+file present the original Apple fonts are used instead; `ATC_BUILTIN_FONTS=1` forces the
+built-in ones.
 
 ## How to play
 
@@ -201,7 +212,8 @@ fields directly.
 | `src/trap.c` | A-line trap dispatch, calls back into 68k code, Memory Manager and OS utility traps |
 | `src/mem.c` | Emulated RAM and the Memory Manager (handles and pointers) |
 | `src/rsrc.c` | Resource Manager over resource-fork files, with a settings overlay for what the game writes back |
-| `src/qd.c`, `rgn.c`, `font.c` | 1-bit QuickDraw: ports, pens, patterns, shapes, true regions, text in the System 6 bitmap fonts, CopyBits and PICT playback |
+| `src/qd.c`, `rgn.c`, `font.c` | 1-bit QuickDraw: ports, pens, patterns, shapes, true regions, text in classic Mac bitmap fonts, CopyBits and PICT playback |
+| `fonts/`, `src/fonts_builtin.c` | The built-in fonts: pixel-art sources and the FONT data generated from them |
 | `src/wm.c` | Window Manager with real visible regions and update events; standard frames drawn natively, the game's own round-window definition (WDEF) runs as 68k code |
 | `src/menu.c`, `dlg.c`, `ctl.c` | Menu bar and menus, dialogs and alerts, buttons, check boxes, radio buttons and scroll bars |
 | `src/evt.c` | Event Manager (activate, mouse, keyboard and update events) |
@@ -209,7 +221,7 @@ fields directly.
 | `src/plat.c` | Portability layer (files, folders, user data locations) |
 | `src/host_win.c`, `audio_win.c` | Windows host: window, input, cursors, icon, dialogs and waveOut audio |
 | `src/host_sdl.c` | macOS and Linux host on SDL2 |
-| `tools/` | Resource-fork extraction, a 68k disassembler and trap audit for the game, screenshot conversion, the icon generator |
+| `tools/` | Resource-fork extraction, a 68k disassembler and trap audit for the game, the font compiler, screenshot conversion, the icon generator |
 
 ### Debugging
 
@@ -221,6 +233,7 @@ Environment variables switch on logging and testing aids:
 | `ATC_PCLOG=n,count` | log `count` instructions after trap number `n` |
 | `ATC_WINLOG`, `ATC_EVLOG`, `ATC_TEXTLOG`, `ATC_CBLOG`, `ATC_SEGLOG`, `ATC_COMPLOG` | log windows, events, text drawing, CopyBits, segment loading, window composition |
 | `ATC_GAME=<folder>`, `ATC_SAVE=<folder>` | game and save folders |
+| `ATC_BUILTIN_FONTS=1` | use the built-in fonts even when a System file is present |
 | `ATC_NOSOUND=1`, `ATC_WAVDUMP=file.wav` | no sound / record the sound output (Windows) |
 | `ATC_HIDDEN=1` | run without showing the window |
 | `ATC_SCRIPT="ms:action;..."` | scripted input for headless tests: `click x y`, `down x y`, `move x y`, `up x y`, `key c`, `cmd c`, `dump file.pbm`, `quit` |
@@ -232,8 +245,9 @@ Environment variables switch on logging and testing aids:
 * **Air Traffic Controller** © 1986–1993 Walter J. Biess. Released as freeware; its own
   terms allow free distribution together with its manual. This project does not include
   the game and is not affiliated with its author.
-* **Macintosh system fonts** © Apple. They are not included; the program reads them from
-  a System file you provide.
+* **Macintosh system fonts** © Apple. They are not included; the program can read them
+  from a System file you provide. The built-in fonts (Tower 12, Radar 9, Radar 12) are
+  original work of this project.
 * **Musashi** 68000 core © 1998–2002 Karl Stenerud, MIT licence (see `musashi/readme.txt`).
   It includes SoftFloat by John R. Hauser (see `musashi/softfloat/README.txt`).
 * **SDL 2** (macOS and Linux builds) © Sam Lantinga, zlib licence.
@@ -241,6 +255,6 @@ Environment variables switch on logging and testing aids:
 
 ## License
 
-The port's own code is released under the [MIT License](LICENSE). It does not cover the
-game or Apple's fonts, which are not included, or the bundled third-party components,
+The port's own code and its built-in fonts are released under the [MIT License](LICENSE).
+It does not cover the game or Apple's fonts, which are not included, or the bundled third-party components,
 which keep their own licences; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

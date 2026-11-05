@@ -22,7 +22,7 @@ if not exist musashi\m68kops.c (
 )
 rc /nologo /fo build\atc.res platform\windows\atc.rc >nul || (echo rc failed & exit /b 1)
 cl /nologo /O2 /Zi /W3 /wd4244 /wd4267 /wd4018 /wd4146 /D_CRT_SECURE_NO_WARNINGS /DATC_VERSION=\"%V%\" /I musashi /Fo:build\ /Fe:build\ATC.exe ^
-   src\main.c src\trap.c src\mem.c src\rsrc.c src\qd.c src\rgn.c src\font.c src\wm.c src\menu.c src\ctl.c src\dlg.c src\evt.c src\fs.c src\pack.c src\plat.c src\host_win.c src\audio_win.c ^
+   src\main.c src\trap.c src\mem.c src\rsrc.c src\qd.c src\rgn.c src\font.c src\wm.c src\menu.c src\ctl.c src\dlg.c src\evt.c src\fs.c src\pack.c src\plat.c src\fonts_builtin.c src\host_win.c src\audio_win.c ^
    musashi\m68kcpu.c musashi\m68kops.c musashi\m68kdasm.c musashi\softfloat\softfloat.c ^
    build\atc.res /link user32.lib gdi32.lib winmm.lib comdlg32.lib shell32.lib ole32.lib /SUBSYSTEM:CONSOLE /DEBUG /OPT:REF
 if errorlevel 1 (echo BUILD FAILED & exit /b 1)

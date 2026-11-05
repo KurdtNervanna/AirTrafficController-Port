@@ -10,7 +10,7 @@ endif()
 
 set(ATC_CORE
   src/main.c src/trap.c src/mem.c src/rsrc.c src/qd.c src/rgn.c src/font.c src/wm.c
-  src/menu.c src/ctl.c src/dlg.c src/evt.c src/fs.c src/pack.c src/plat.c
+  src/menu.c src/ctl.c src/dlg.c src/evt.c src/fs.c src/pack.c src/plat.c src/fonts_builtin.c
   musashi/m68kcpu.c musashi/m68kops.c musashi/m68kdasm.c musashi/softfloat/softfloat.c)
 
 if(WIN32)
