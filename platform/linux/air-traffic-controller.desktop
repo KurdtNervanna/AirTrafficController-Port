@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Air Traffic Controller
+Comment=Air Traffic Controller 5.03 (classic Mac game)
+Exec=atc
+Icon=air-traffic-controller
+Categories=Game;Simulation;
+Terminal=false

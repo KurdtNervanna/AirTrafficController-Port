@@ -1,0 +1,104 @@
+name: Release
+
+# Builds Windows, macOS and Linux packages. A pushed tag (v*) also publishes them
+# as a GitHub release; running the workflow by hand just keeps them as artifacts.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: |
+          cmake -S . -B b -A x64
+          cmake --build b --config Release
+      - name: Package
+        shell: pwsh
+        run: |
+          $d = "pkg/Air Traffic Controller"
+          New-Item -ItemType Directory -Force "$d/game" | Out-Null
+          Copy-Item b/Release/ATC.exe $d/
+          Copy-Item README.md $d/
+          Set-Content "$d/game/PUT GAME FILES HERE.txt" "Put ATC.rsrc (Air Traffic Controller 5.03) and System.rsrc (a System 6 System file) here. See README.md."
+          Compress-Archive -Path "pkg/Air Traffic Controller" -DestinationPath ATC-Windows-x64.zip
+      - uses: actions/upload-artifact@v4
+        with: { name: windows, path: ATC-Windows-x64.zip }
+
+  macos:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build (universal arm64 + x86_64)
+        run: |
+          cmake -S . -B b -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13
+          cmake --build b -j4
+          lipo -info "b/Air Traffic Controller.app/Contents/MacOS/Air Traffic Controller"
+      - name: Package
+        run: |
+          app="b/Air Traffic Controller.app"
+          codesign --force --deep -s - "$app"          # ad-hoc signature (not notarized)
+          mkdir -p dmg && cp -R "$app" dmg/ && cp README.md dmg/
+          ln -s /Applications dmg/Applications
+          hdiutil create -volname "Air Traffic Controller" -srcfolder dmg -ov -format UDZO ATC-macOS-universal.dmg
+      - uses: actions/upload-artifact@v4
+        with: { name: macos, path: ATC-macOS-universal.dmg }
+
+  linux:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependencies (SDL2 is built from source)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxss-dev \
+            libxfixes-dev libwayland-dev libxkbcommon-dev wayland-protocols libdecor-0-dev \
+            libasound2-dev libpulse-dev libgl1-mesa-dev libegl1-mesa-dev
+      - name: Build
+        run: |
+          cmake -S . -B b -DCMAKE_BUILD_TYPE=Release
+          cmake --build b -j4
+      - name: Package (tarball)
+        run: |
+          d="air-traffic-controller"
+          mkdir -p "$d/game"
+          cp b/atc README.md "$d/"
+          cp platform/linux/air-traffic-controller.desktop "$d/"
+          cp platform/icon.png "$d/air-traffic-controller.png"
+          echo "Put ATC.rsrc (Air Traffic Controller 5.03) and System.rsrc (a System 6 System file) here. See README.md." > "$d/game/PUT GAME FILES HERE.txt"
+          tar czf ATC-Linux-x86_64.tar.gz "$d"
+      - name: Package (AppImage)
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: '1'
+        run: |
+          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          chmod +x linuxdeploy-x86_64.AppImage
+          mkdir -p icons && cp platform/icon.png icons/air-traffic-controller.png
+          OUTPUT=ATC-Linux-x86_64.AppImage ./linuxdeploy-x86_64.AppImage --appdir AppDir -e b/atc \
+            -d platform/linux/air-traffic-controller.desktop -i icons/air-traffic-controller.png --output appimage
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: |
+            ATC-Linux-x86_64.tar.gz
+            ATC-Linux-x86_64.AppImage
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [windows, macos, linux]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: artifacts, merge-multiple: true }
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: Air Traffic Controller ${{ github.ref_name }}
+          body_path: RELEASE_NOTES.md
+          files: artifacts/*

@@ -1,0 +1,12 @@
+# game data (supply your own copies)
+game/
+save/
+# build and test output
+build/
+b/
+dist/
+pkg/
+out/
+*.pdb
+*.obj
+__pycache__/
