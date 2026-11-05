@@ -1,5 +1,6 @@
 """Draw the app icon (a 1-bit radar scope in the classic Mac style) and write it for
-every platform: platform/icon.png, platform/windows/atc.ico, platform/macos/atc.icns.
+every platform: platform/icon.png, platform/linux/air-traffic-controller.png,
+platform/windows/atc.ico, platform/macos/atc.icns.
 
     python tools/make_icon.py
 """
@@ -53,6 +54,8 @@ os.makedirs(os.path.join(root, 'windows'), exist_ok=True)
 os.makedirs(os.path.join(root, 'macos'), exist_ok=True)
 big = img.resize((1024, 1024), Image.NEAREST)
 big.save(os.path.join(root, 'icon.png'))
+os.makedirs(os.path.join(root, 'linux'), exist_ok=True)
+img.resize((256, 256), Image.NEAREST).save(os.path.join(root, 'linux', 'air-traffic-controller.png'))
 img.resize((256, 256), Image.NEAREST).save(os.path.join(root, 'windows', 'atc.ico'),
                                           sizes=[(16, 16), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)])
 big.save(os.path.join(root, 'macos', 'atc.icns'))

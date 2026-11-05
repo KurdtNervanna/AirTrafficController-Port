@@ -70,7 +70,7 @@ jobs:
           mkdir -p "$d/game"
           cp b/atc README.md "$d/"
           cp platform/linux/air-traffic-controller.desktop "$d/"
-          cp platform/icon.png "$d/air-traffic-controller.png"
+          cp platform/linux/air-traffic-controller.png "$d/"
           echo "Put ATC.rsrc (Air Traffic Controller 5.03) and System.rsrc (a System 6 System file) here. See README.md." > "$d/game/PUT GAME FILES HERE.txt"
           tar czf ATC-Linux-x86_64.tar.gz "$d"
       - name: Package (AppImage)
@@ -79,9 +79,8 @@ jobs:
         run: |
           wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
           chmod +x linuxdeploy-x86_64.AppImage
-          mkdir -p icons && cp platform/icon.png icons/air-traffic-controller.png
           OUTPUT=ATC-Linux-x86_64.AppImage ./linuxdeploy-x86_64.AppImage --appdir AppDir -e b/atc \
-            -d platform/linux/air-traffic-controller.desktop -i icons/air-traffic-controller.png --output appimage
+            -d platform/linux/air-traffic-controller.desktop -i platform/linux/air-traffic-controller.png --output appimage
       - uses: actions/upload-artifact@v4
         with:
           name: linux
