@@ -1,21 +1,9 @@
-"""Disassemble ATC CODE: python dis.py <app.rsrc> <seg> [start_hex] [count] | python dis.py <app.rsrc> find <trapword_hex> [before] [after]"""
+"""Disassemble ATC CODE: python disasm.py <app.rsrc> <seg> [start_hex] [count] | python disasm.py <app.rsrc> find <trapword_hex> [before] [after]"""
 import struct, sys, os
 sys.path.insert(0, os.path.dirname(__file__))
 from rfork import raw_fork, resources
 import capstone
-src = open(r'C:/Users/Drew0/Claude/Falcon_Sierra_PC/decomp/name_traps.py').read()
-ns = {}; exec(src.split('def name_for')[0], ns); OS, TB = ns['OS'], ns['TB']
-EXTRA = {0xA862:'ForeColor',0xA863:'BackColor',0xA869:'FixRatio',0xA86F:'OpenPort',0xA870:'LocalToGlobal',0xA871:'GlobalToLocal',
- 0xA87D:'ClosePort',0xA898:'GetPenState',0xA899:'SetPenState',0xA8BF:'PaintArc',0xA8E1:'InsetRgn',0xA8E2:'EmptyRgn',0xA8E9:'RectInRgn',
- 0xA8FD:'PrGlue',0xA8FE:'InitFonts',0xA906:'NewString',0xA909:'CalcVis',0xA936:'DeleteMenu',0xA938:'HiliteMenu',0xA94C:'FlashMenuBar',
- 0xA950:'CountMItems',0xA959:'MoveControl',0xA95C:'SizeControl',0xA961:'GetMinCtl',0xA962:'GetMaxCtl',0xA964:'SetMinCtl',0xA965:'SetMaxCtl',
- 0xA97E:'SelIText',0xA998:'UseResFile',0xA9B1:'CreateResFile',0xA9B8:'GetPattern',0xA9BA:'GetString',0xA9BF:'GetMenu',0xA9E1:'HandToHand',
- 0xA9EA:'Pack3',0xA9EB:'Pack4',0xA9EE:'Pack7',0xAA45:'NewCWindow',0xAA46:'GetNewCWindow',0xAA48:'GetCWMgrPort'}
-OSX = {0x32:'FlushEvents',0x36:'MoreMasters',0x49:'HPurge',0x4A:'HNoPurge',0x4B:'SetGrowZone',0x55:'StripAddress',0x60:'HFSDispatch',
- 0x63:'MaxApplZone',0x64:'MoveHHi',0x90:'SysEnvirons',0x46:'GetTrapAddress'}
-def tname(w):
-    if w < 0xA800: return OSX.get(w & 0xFF) or OS.get(w & 0xFF, '?')
-    return EXTRA.get(w & 0xFBFF) or TB.get(w, TB.get(w & 0xFBFF, '?'))
+from trapnames import name as tname
 rs = {(t, rid): b for t, rid, nm, b in resources(raw_fork(open(sys.argv[1], 'rb').read()))}
 md = capstone.Cs(capstone.CS_ARCH_M68K, capstone.CS_MODE_M68K_020)
 def lines(seg):

@@ -3,17 +3,7 @@ import struct, sys, collections, os
 sys.path.insert(0, os.path.dirname(__file__))
 from rfork import raw_fork, resources
 import capstone
-sys.path.insert(0, r'C:/Users/Drew0/Claude/Falcon_Sierra_PC/decomp')
-names = {}
-try:
-    src = open(r'C:/Users/Drew0/Claude/Falcon_Sierra_PC/decomp/name_traps.py').read()
-    ns = {}; exec(src.split('def name_for')[0], ns)
-    OS, TB = ns['OS'], ns['TB']
-except Exception:
-    OS, TB = {}, {}
-def name(w):
-    if w < 0xA800: return OS.get(w & 0xFF, '?')
-    return TB.get(w, TB.get(w & 0xFBFF, '?'))
+from trapnames import name
 rs = resources(raw_fork(open(sys.argv[1], 'rb').read()))
 md = capstone.Cs(capstone.CS_ARCH_M68K, capstone.CS_MODE_M68K_020)
 tr = collections.Counter(); first = {}
