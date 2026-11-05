@@ -13,3 +13,5 @@ Air Traffic Controller 5.03 (Walter J. Biess, 1993) running natively on Windows,
 **macOS:** the app is not notarized. The first time, right-click it and choose Open (or run `xattr -dr com.apple.quarantine "/Applications/Air Traffic Controller.app"`).
 
 **Linux:** opening and saving schedules uses `zenity` or `kdialog`.
+
+**Licence:** the port is MIT-licensed (see LICENSE); the game and Apple's fonts are not included and keep their own terms (see THIRD_PARTY_NOTICES.md).
