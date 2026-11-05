@@ -25,6 +25,7 @@ like it did on a 1993 Macintosh, in a resizable window on a modern computer.
 - [Building from source](#building-from-source)
 - [How it works](#how-it-works)
 - [Credits and legal](#credits-and-legal)
+- [License](#license)
 
 ## Download
 
@@ -235,4 +236,11 @@ Environment variables switch on logging and testing aids:
   a System file you provide.
 * **Musashi** 68000 core © 1998–2002 Karl Stenerud, MIT licence (see `musashi/readme.txt`).
   It includes SoftFloat by John R. Hauser (see `musashi/softfloat/README.txt`).
+* **SDL 2** (macOS and Linux builds) © Sam Lantinga, zlib licence.
 * Port by **KurdtNervanna**.
+
+## License
+
+The port's own code is released under the [MIT License](LICENSE). It does not cover the
+game or Apple's fonts, which are not included, or the bundled third-party components,
+which keep their own licences; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
