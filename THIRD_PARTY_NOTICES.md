@@ -4,17 +4,35 @@ The MIT licence in [LICENSE](LICENSE) covers the code of this port and its built
 fonts (Tower 12, Radar 9 and Radar 12 in `fonts/`, drawn from scratch for this project):
 everything in this repository except the components below, which keep their own terms.
 
-## Not included: the game and the Macintosh fonts
+## Air Traffic Controller (included: `data/`)
 
-* **Air Traffic Controller** © 1986–1993 Walter J. Biess. The game is not part of this
-  repository or its releases, and this project is not affiliated with its author. The
-  game was released as freeware; its own terms (shown in its About box) allow free,
-  non-commercial distribution together with its manual. Those terms, not this project's
-  licence, apply to the game.
-* **Macintosh system fonts** (Chicago, Geneva, Monaco) © Apple. They are not included. If
-  the player supplies a System file, the program reads them from it at run time;
-  otherwise it uses its own built-in fonts. Only the fonts' advance widths and line
-  metrics were matched, so that text lays out the same; the glyphs are original.
+**Air Traffic Controller 5.03** © 1986–1993 Walter J. Biess. The application's resource
+fork (`data/ATC.rsrc`) and its manual (`data/Manual.txt`, converted from the original
+TeachText file) are included and compiled into every build. This project is not
+affiliated with the author, and the MIT licence does not apply to them: they are passed
+on under the game's own freeware terms, from its About box:
+
+> This program and its manual may be distributed together by:
+> 1) Individuals as long as no fee is charged for the program;
+> 2) Apple Users Groups as long as no fee is charged for the program except that a
+>    nominal disk copying fee may be charged;
+> 3) Electronic information services and bulletin boards as long as no charge is made
+>    for the program except for the normal connect time charge.
+>
+> Without the written consent of the author, other methods of distribution are
+> prohibited. This program may not be included in collections of public domain/shareware
+> programs that are sold on floppies, CD-ROM or other media.
+
+So the game must be passed on free of charge and with its manual: every package of this
+project includes the manual, and the program also writes it into its save folder the
+first time it runs.
+
+## Not included: the Macintosh fonts
+
+**Macintosh system fonts** (Chicago, Geneva, Monaco) © Apple. They are not included. If
+the player supplies a System file, the program reads them from it at run time; otherwise
+it uses its own built-in fonts. Only the fonts' advance widths and line metrics were
+matched, so that text lays out the same; the glyphs are original.
 
 The screenshots in `docs/screenshots` show the game running in this port, for
 illustration.

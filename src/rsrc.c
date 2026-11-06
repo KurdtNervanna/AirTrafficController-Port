@@ -193,6 +193,19 @@ int rs_open_system(const char *path){
     chain_push(fi); g_sys = fi; g_cur = fi; ww(LM_SysMap, 2);
     return 1;
 }
+/* the application's resource fork from a file, or (path NULL) from memory */
+int rs_open_app_mem(const unsigned char *data, unsigned size, const char *overlay){
+    unsigned len = size; unsigned char *b = (unsigned char*)malloc(size ? size : 1); int fi;
+    if (!b) return 0;
+    memcpy(b, data, size); unwrap_fork(b, &len);
+    fi = new_file();
+    g_f[fi].refnum = 3; g_f[fi].readonly = 1; strncpy(g_f[fi].path, overlay, 599);
+    if (!parse_fork(&g_f[fi], b, len, 0)){ free(b); g_f[fi].used = 0; return 0; }
+    free(b);
+    if ((b = slurp(overlay, &len)) != 0){ parse_fork(&g_f[fi], b, len, 1); free(b); logf_("[rsrc] settings loaded from %s\n", overlay); }
+    chain_push(fi); g_app = fi; g_cur = fi;
+    return 1;
+}
 int rs_open_app(const char *path, const char *overlay){
     unsigned len; unsigned char *b = slurp(path, &len); int fi;
     if (!b) return 0;

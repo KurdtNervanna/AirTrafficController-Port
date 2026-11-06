@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 project(AirTrafficController C)
 
 set(CMAKE_C_STANDARD 99)
+# Windows: link the C runtime statically, so ATC.exe runs without any redistributable
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 if(EXISTS ${CMAKE_SOURCE_DIR}/VERSION)
   file(STRINGS ${CMAKE_SOURCE_DIR}/VERSION ATC_VERSION LIMIT_COUNT 1)
 else()
@@ -11,7 +13,21 @@ endif()
 set(ATC_CORE
   src/main.c src/trap.c src/mem.c src/rsrc.c src/qd.c src/rgn.c src/font.c src/wm.c
   src/menu.c src/ctl.c src/dlg.c src/evt.c src/fs.c src/pack.c src/plat.c src/fonts_builtin.c
-  musashi/m68kcpu.c musashi/m68kops.c musashi/m68kdasm.c musashi/softfloat/softfloat.c)
+  musashi/m68kcpu.c musashi/m68kops.c musashi/m68kdasm.c musashi/softfloat/softfloat.c
+  ${CMAKE_BINARY_DIR}/atc_data.c ${CMAKE_BINARY_DIR}/atc_manual.c)
+
+# The game (freeware, data/ATC.rsrc) is compiled into the program, so it runs on its own.
+add_executable(bin2c tools/bin2c.c)
+add_custom_command(
+  OUTPUT ${CMAKE_BINARY_DIR}/atc_data.c
+  COMMAND bin2c ${CMAKE_SOURCE_DIR}/data/ATC.rsrc ${CMAKE_BINARY_DIR}/atc_data.c atc_app
+  DEPENDS bin2c ${CMAKE_SOURCE_DIR}/data/ATC.rsrc
+  COMMENT "Embedding the game")
+add_custom_command(
+  OUTPUT ${CMAKE_BINARY_DIR}/atc_manual.c
+  COMMAND bin2c ${CMAKE_SOURCE_DIR}/data/Manual.txt ${CMAKE_BINARY_DIR}/atc_manual.c atc_manual
+  DEPENDS bin2c ${CMAKE_SOURCE_DIR}/data/Manual.txt
+  COMMENT "Embedding the manual")
 
 if(WIN32)
   add_executable(ATC WIN32 ${ATC_CORE} src/host_win.c src/audio_win.c platform/windows/atc.rc)
@@ -56,4 +72,4 @@ else()
 endif()
 
 target_include_directories(ATC PRIVATE src musashi)
-target_compile_definitions(ATC PRIVATE ATC_VERSION="${ATC_VERSION}")
+target_compile_definitions(ATC PRIVATE ATC_VERSION="${ATC_VERSION}" ATC_EMBED_GAME)

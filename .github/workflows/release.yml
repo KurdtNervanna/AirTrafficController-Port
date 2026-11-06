@@ -2,6 +2,7 @@ name: Release
 
 # Builds Windows, macOS and Linux packages. A pushed tag (v*) also publishes them
 # as a GitHub release; running the workflow by hand just keeps them as artifacts.
+# The game is compiled into each program, so every download runs on its own.
 on:
   push:
     tags: ['v*']
@@ -22,14 +23,19 @@ jobs:
       - name: Package
         shell: pwsh
         run: |
+          Copy-Item b/Release/ATC.exe ATC-Windows-x64.exe
           $d = "pkg/Air Traffic Controller"
-          New-Item -ItemType Directory -Force "$d/game" | Out-Null
+          New-Item -ItemType Directory -Force $d | Out-Null
           Copy-Item b/Release/ATC.exe $d/
           Copy-Item README.md, LICENSE, THIRD_PARTY_NOTICES.md $d/
-          Set-Content "$d/game/PUT GAME FILES HERE.txt" "Put the Air Traffic Controller 5.03 application here (ATC.rsrc, or its AppleDouble/MacBinary file). Optionally add a System 6 System file for Apple's original fonts. See README.md."
+          Copy-Item data/Manual.txt "$d/Air Traffic Controller Manual.txt"
           Compress-Archive -Path "pkg/Air Traffic Controller" -DestinationPath ATC-Windows-x64.zip
       - uses: actions/upload-artifact@v4
-        with: { name: windows, path: ATC-Windows-x64.zip }
+        with:
+          name: windows
+          path: |
+            ATC-Windows-x64.exe
+            ATC-Windows-x64.zip
 
   macos:
     runs-on: macos-14
@@ -43,12 +49,19 @@ jobs:
       - name: Package
         run: |
           app="b/Air Traffic Controller.app"
+          cp data/Manual.txt "$app/Contents/Resources/Air Traffic Controller Manual.txt"
           codesign --force --deep -s - "$app"          # ad-hoc signature (not notarized)
+          ditto -c -k --keepParent "$app" ATC-macOS-universal.zip
           mkdir -p dmg && cp -R "$app" dmg/ && cp README.md LICENSE THIRD_PARTY_NOTICES.md dmg/
+          cp data/Manual.txt "dmg/Air Traffic Controller Manual.txt"
           ln -s /Applications dmg/Applications
           hdiutil create -volname "Air Traffic Controller" -srcfolder dmg -ov -format UDZO ATC-macOS-universal.dmg
       - uses: actions/upload-artifact@v4
-        with: { name: macos, path: ATC-macOS-universal.dmg }
+        with:
+          name: macos
+          path: |
+            ATC-macOS-universal.dmg
+            ATC-macOS-universal.zip
 
   linux:
     runs-on: ubuntu-22.04
@@ -67,11 +80,11 @@ jobs:
       - name: Package (tarball)
         run: |
           d="air-traffic-controller"
-          mkdir -p "$d/game"
+          mkdir -p "$d"
           cp b/atc README.md LICENSE THIRD_PARTY_NOTICES.md "$d/"
+          cp data/Manual.txt "$d/Air Traffic Controller Manual.txt"
           cp platform/linux/air-traffic-controller.desktop "$d/"
           cp platform/linux/air-traffic-controller.png "$d/"
-          echo "Put the Air Traffic Controller 5.03 application here (ATC.rsrc, or its AppleDouble/MacBinary file). Optionally add a System 6 System file for Apple's original fonts. See README.md." > "$d/game/PUT GAME FILES HERE.txt"
           tar czf ATC-Linux-x86_64.tar.gz "$d"
       - name: Package (AppImage)
         env:
@@ -79,6 +92,8 @@ jobs:
         run: |
           wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
           chmod +x linuxdeploy-x86_64.AppImage
+          mkdir -p AppDir/usr/share/doc/air-traffic-controller
+          cp data/Manual.txt "AppDir/usr/share/doc/air-traffic-controller/Air Traffic Controller Manual.txt"
           OUTPUT=ATC-Linux-x86_64.AppImage ./linuxdeploy-x86_64.AppImage --appdir AppDir -e b/atc \
             -d platform/linux/air-traffic-controller.desktop -i platform/linux/air-traffic-controller.png --output appimage
       - uses: actions/upload-artifact@v4

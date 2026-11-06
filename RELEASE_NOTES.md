@@ -4,16 +4,14 @@ Air Traffic Controller 5.03 (Walter J. Biess, 1993) running natively on Windows,
 
 | System | File |
 |---|---|
-| Windows 10/11 (x64) | `ATC-Windows-x64.zip` |
-| macOS 10.13+ (Apple silicon and Intel) | `ATC-macOS-universal.dmg` |
+| Windows 10 or 11 (64-bit) | `ATC-Windows-x64.exe` (or the `.zip` with the manual) |
+| macOS 10.13+ (Apple silicon and Intel) | `ATC-macOS-universal.dmg` or `.zip` |
 | Linux x86_64 | `ATC-Linux-x86_64.AppImage` or `ATC-Linux-x86_64.tar.gz` |
 
-**New in 1.1.0: no System file needed.** The port now has its own built-in fonts, drawn from scratch with the same character widths as the classic Mac fonts, so the only file you need is the game itself. A System 6 System file is still used if you add one, for Apple's original fonts.
-
-**The game is not included.** You need your own copy of the Air Traffic Controller 5.03 application (freeware). On first launch the program asks for the folder that holds it and remembers it. See README.md for the accepted formats.
+**New in 1.2.0: one file, nothing to set up.** The game is now built into the program, so each download runs on its own: no game files, no folder to pick. The Windows program is a single `.exe` with no runtime libraries to install. The freeware game is included under its author's terms, which ask that it is passed on free of charge with its manual: the manual is in each package, and the program also writes a copy into its save folder.
 
 **macOS:** the app is not notarized. The first time, right-click it and choose Open (or run `xattr -dr com.apple.quarantine "/Applications/Air Traffic Controller.app"`).
 
 **Linux:** opening and saving schedules uses `zenity` or `kdialog`.
 
-**Licence:** the port is MIT-licensed (see LICENSE); the game and Apple's fonts are not included and keep their own terms (see THIRD_PARTY_NOTICES.md).
+**Licence:** the port and its fonts are MIT-licensed (see LICENSE); the game keeps its author's freeware terms and Apple's fonts are not included (see THIRD_PARTY_NOTICES.md).

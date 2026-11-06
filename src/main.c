@@ -2,10 +2,10 @@
  *
  *   ATC [game folder]
  *
- * The game folder holds the application's resource fork (ATC.rsrc) and, optionally,
- * a System 6 System file (System.rsrc) for Apple's fonts; see find_game. Settings and documents go
- * to a "save" folder: beside the game folder on Windows, in the user's data folder
- * on macOS and Linux.
+ * The game itself is compiled in; a folder with another copy can be given instead
+ * (see find_game). Settings and documents go to a "save" folder: beside the program
+ * on Windows (or in %APPDATA% if that isn't writable), in the user's data folder on
+ * macOS and Linux.
  */
 #include "mac.h"
 #include "plat.h"
@@ -90,10 +90,17 @@ void hle_idle(int sleep_ms){
 }
 
 /* ---- launch ---------------------------------------------------------------------- */
-/* A game folder holds the application's resource fork (any file containing the
-   'Watc' signature resource: raw fork, AppleDouble or MacBinary) and, optionally, a
-   System file (any file with 'FONT' resources) for Apple's own fonts; without one
-   the built-in fonts are used. ATC.rsrc / System.rsrc are tried first. */
+/* The game is compiled into the program (data/ATC.rsrc -> atc_data.c), so it runs on
+   its own. A different copy can still be given: a folder holding the application's
+   resource fork (any file containing the 'Watc' signature resource: raw fork,
+   AppleDouble or MacBinary), on the command line or in ATC_GAME.
+   Fonts come from a System 6 System file when one is found (any file with 'FONT'
+   resources, beside the program or in the user data folder); otherwise the
+   built-in ones are used. */
+#ifdef ATC_EMBED_GAME
+extern const unsigned char atc_app[];
+extern const unsigned atc_app_len;
+#endif
 static int scan_game(const char *dir, char *app, char *sys){
     char p[1024], n[512]; int k;
     app[0] = sys[0] = 0;
@@ -109,46 +116,29 @@ static int scan_game(const char *dir, char *app, char *sys){
     }
     return app[0] != 0;
 }
+/* an optional System file (for Apple's fonts) in the usual places */
+static void find_system(char *sys){
+    static const char *names[] = { "System.rsrc", "System", "System.bin", 0 };
+    char dirs[4][700], p[1024]; int d, k;
+    plat_exe_dir(dirs[0], 600);
+    snprintf(dirs[1], 700, "%s" PSEP "game", dirs[0]);
+    snprintf(dirs[2], 700, "%s" PSEP ".." PSEP "Resources", dirs[0]);
+    plat_user_dir(dirs[3], 600);
+    for (d = 0; d < 4; d++) for (k = 0; names[k]; k++){
+        snprintf(p, sizeof p, "%s" PSEP "%s", dirs[d], names[k]);
+        if (plat_exists(p) && !plat_is_dir(p) && rs_file_has(p, 0x464F4E54u)){ strcpy(sys, p); return; }
+    }
+}
+/* a game copy given on the command line or in ATC_GAME (else the built-in one) */
 static int find_game(const char *arg, char *dir, char *app, char *sys){
-    char exe[600], user[600], c[1024]; int k; FILE *f;
-    static const char *rel[] = { "game", ".." PSEP "game", ".." PSEP ".." PSEP "game", ".." PSEP "Resources" PSEP "game", ".", 0 };
     if (arg && scan_game(arg, app, sys)){ snprintf(dir, 600, "%s", arg); return 1; }
     if (getenv("ATC_GAME") && scan_game(getenv("ATC_GAME"), app, sys)){ snprintf(dir, 600, "%s", getenv("ATC_GAME")); return 1; }
-    plat_exe_dir(exe, sizeof exe);
-    for (k = 0; rel[k]; k++){
-        snprintf(c, sizeof c, "%s" PSEP "%s", exe, rel[k]);
-        if (scan_game(c, app, sys)){ snprintf(dir, 600, "%s", c); return 1; }
-    }
-    plat_user_dir(user, sizeof user);
-    snprintf(c, sizeof c, "%s" PSEP "game", user);
-    if (scan_game(c, app, sys)){ snprintf(dir, 600, "%s", c); return 1; }
-    snprintf(c, sizeof c, "%s" PSEP "game-folder.txt", user);                     /* a folder picked earlier */
-    if ((f = fopen(c, "r")) != 0){
-        char line[600] = {0}; if (fgets(line, sizeof line, f)){ line[strcspn(line, "\r\n")] = 0;
-            if (scan_game(line, app, sys)){ fclose(f); snprintf(dir, 600, "%s", line); return 1; } }
-        fclose(f);
-    }
-    return 0;
-}
-static int ask_game_folder(char *dir, char *app, char *sys){
-    char user[600], c[1024], pick[1024]; FILE *f;
-    host_message("Air Traffic Controller",
-        "Choose the folder that holds the Air Traffic Controller 5.03 application: its\n"
-        "resource fork (ATC.rsrc), or the AppleDouble or MacBinary file from unpacking\n"
-        "the original archive.\n\n"
-        "Optional: a System 6 \"System\" file in the same folder makes the game use Apple's\n"
-        "original fonts instead of the built-in ones.\n\n"
-        "The folder is remembered.");
-    while (host_pick_folder(pick, sizeof pick)){
-        if (scan_game(pick, app, sys)){
-            plat_user_dir(user, sizeof user); plat_mkdir(user);
-            snprintf(c, sizeof c, "%s" PSEP "game-folder.txt", user);
-            if ((f = fopen(c, "w")) != 0){ fprintf(f, "%s\n", pick); fclose(f); }
-            snprintf(dir, 600, "%s", pick);
-            return 1;
-        }
-        host_message("Air Traffic Controller", "That folder does not hold the Air Traffic Controller 5.03 application.");
-    }
+#ifndef ATC_EMBED_GAME
+    {   char exe[600], c[1024];                                   /* builds without the game: look beside the program */
+        plat_exe_dir(exe, sizeof exe);
+        snprintf(c, sizeof c, "%s" PSEP "game", exe);
+        if (scan_game(c, app, sys)){ snprintf(dir, 600, "%s", c); return 1; } }
+#endif
     return 0;
 }
 
@@ -197,23 +187,38 @@ static void init_lowmem(void){
 }
 
 int main(int argc, char **argv){
-    char dir[600], app[1024], sys[1024], save[700], overlay[800]; int scale = 2;
+    char dir[600] = "", app[1024] = "", sys[1024] = "", save[700], overlay[800]; int scale = 2;
     const char *arg = 0; int i;
     for (i = 1; i < argc; i++) if (argv[i][0] != '-') arg = argv[i];          /* macOS adds -psn_... */
-    if (!find_game(arg, dir, app, sys) && !ask_game_folder(dir, app, sys)) return 2;
+    if (!find_game(arg, dir, app, sys)){
+#ifndef ATC_EMBED_GAME
+        host_message("Air Traffic Controller", "This build does not include the game. Put ATC.rsrc in a folder named \"game\" beside the program, or pass its folder on the command line.");
+        return 2;
+#endif
+    }
+    if (!sys[0]) find_system(sys);
     if (getenv("ATC_SCALE")) scale = atoi(getenv("ATC_SCALE"));
     if (scale < 1) scale = 1;
     g_trace = getenv("ATC_TRACE") != 0;
 #ifdef _WIN32
-    snprintf(save, sizeof save, "%s\\..\\save", dir);                           /* portable: next to the game folder */
-    {   FILE *t; char probe[800]; plat_mkdir(save); snprintf(probe, sizeof probe, "%s\\.probe", save);
+    {   /* portable: a "save" folder beside the program, unless that isn't writable */
+        FILE *t; char probe[800], exe[600]; plat_exe_dir(exe, sizeof exe);
+        snprintf(save, sizeof save, "%s" PSEP "save", exe);
+        plat_mkdir(save); snprintf(probe, sizeof probe, "%s" PSEP ".probe", save);
         if ((t = fopen(probe, "wb")) != 0){ fclose(t); remove(probe); }
-        else { plat_user_dir(save, sizeof save); strncat(save, "\\save", sizeof save - strlen(save) - 1); } }
+        else { plat_user_dir(save, sizeof save); strncat(save, PSEP "save", sizeof save - strlen(save) - 1); } }
 #else
     plat_user_dir(save, sizeof save); strncat(save, "/save", sizeof save - strlen(save) - 1);
 #endif
     if (getenv("ATC_SAVE")) snprintf(save, sizeof save, "%s", getenv("ATC_SAVE"));
     fs_init(save, dir);
+#ifdef ATC_EMBED_GAME
+    {   /* the game's terms ask that it is passed on with its manual: keep a copy by the saves */
+        extern const unsigned char atc_manual[]; extern const unsigned atc_manual_len;
+        char mp[900]; FILE *f;
+        snprintf(mp, sizeof mp, "%s" PSEP "Air Traffic Controller Manual.txt", save);
+        if (!plat_exists(mp) && (f = fopen(mp, "wb")) != 0){ fwrite(atc_manual, 1, atc_manual_len, f); fclose(f); } }
+#endif
     snprintf(overlay, sizeof overlay, "%s" PSEP "ATC Settings.rsrc", save);
 
     m68k_init(); m68k_set_cpu_type(M68K_CPU_TYPE_68020);
@@ -225,7 +230,10 @@ int main(int argc, char **argv){
     init_lowmem();
 
     if (sys[0] && !rs_open_system(sys)) logf_("[rsrc] could not read the System file %s; using the built-in fonts\n", sys);
-    if (!rs_open_app(app, overlay)) fatal("Could not read %s.", app);
+    if (app[0]){ if (!rs_open_app(app, overlay)) fatal("Could not read %s.", app); }
+#ifdef ATC_EMBED_GAME
+    else if (!rs_open_app_mem(atc_app, atc_app_len, overlay)) fatal("The built-in game data is damaged.");
+#endif
     load_segments();
 
     host_init(g_scr_w, g_scr_h, scale, "Air Traffic Controller 5.03");

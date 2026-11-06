@@ -1,0 +1,291 @@
+﻿
+ 
+
+
+
+
+
+© 1986-1993 Walter J. Biess
+
+Introduction
+===========
+As an air traffic controller, you are in charge of all of the air traffic in your sector.  The schedule of arrivals, departures, and over-flights has already been determined and its your job to guide all of the aircraft safely to their destinations.
+
+All air traffic controllers are required to use this simulator to train themselves for difficult situations.  The simulator has a radar screen, status/command panel, shift clock, current score indicator, wind direction indicator and turn timer.  Instructions for these devices is provided below.
+
+Air Traffic Control Radar Screen
+=============================
+The radar screen shows the current positions and headings of all of the aircraft that are currently in the air. If two or more aircraft are at the same location, only one will appear on the radar. The space between dots on the radar screen is the distance a jet plane will travel in one 15 second turn.  A propeller plane will travel the same distance in two 15 second turns and a helicopter will require four 15 second turns.
+
+The radar screen also shows all airports in the sector.  Airports are numbered from 1 to 5.  The airport headings indicate the direction that all aircraft must use for landings and takeoffs. Aircraft will enter and exit either at one of the eight compass points on the radar screen (N, S, E, W, NE, NW, SE, SW) or at one of the airports.
+
+When entering from a compass point, the heading is directly toward the center of the radar.  When leaving from a compass point, the heading must be directly away from the center of the radar. When leaving from an airport, the aircraft will takeoff in the proper direction for the airport. When landing, the aircraft must land from the proper direction in order not to crash.
+
+In addition to airports, the radar screen shows any significant obstacles such as restricted areas, hills, towers, and thunder storms. Thunderstorms move in direction of the wind, which is shown in the wind direction indicator window.
+
+The altitude levels for hills and towers are shown and they can be flown over without penalty. To preview the aircraft entering in the next minute, place the cursor in the frame of the radar window near the entry point of interest and hold the mouse button down.
+
+
+Air Traffic Schedule Panel
+========================
+The Air Traffic Schedule Panel displays eight columns of information for each aircraft:
+
+1st - Current status.
+2nd - Aircraft type.
+3rd - Current heading and altitude.
+4th - Commanded heading and altitude.
+5th - Entry point.
+6th - Exit point.
+7th - Fuel time.
+8th - Entry time.
+
+Aircraft Status
+--------------
+The 1st column contains one of the following symbols to show the current status of each aircraft:
+
+“>” - Aircraft not yet under your control.
+“  ” - Aircraft in the air and OK.
+“∆” - Aircraft at airport and ready for takeoff.
+“•” - Aircraft in the air and involved in a 'near miss'.
+“=” - Aircraft on course for scheduled exit.
+“#” - Aircraft on course but involved in a 'near miss'.
+
+Whenever an aircraft is on course for its destination, it will be highlighted compared to those that are not on course.  Any aircraft involved in a near miss will blink on the screen.
+
+Aircraft Type
+------------
+The 2nd column uses one character to show the aircraft type:
+
+“J” - Jet plane.
+“P” - Propeller plane.
+“H” - Helicopter.
+
+Current Heading And Altitude
+--------------------------
+The 3rd column gives the current heading (N, S, E, W, NE, NW, SE, & SW) and altitude (level 0 to 8) for aircraft under your control.  It is blank for aircraft that are not yet under your control.
+
+Commanded Heading And Altitude
+------------------------------
+The 4th column lists the heading and altitude the aircraft has been commanded to.  Its blank when the current and commanded headings and altitudes are the same.
+
+Entry Point
+----------
+The 5th column lists the entry point of the aircraft on the screen.  The entry point will either be a compass point and altitude (NE5; enter from NE at level 5) or an airport that the aircraft will leave from (AP2; airport #2).
+
+Exit Point
+---------
+The 6th column shows the exit point to which the aircraft must be directed.  The exit will either be a compass point and altitude on the radar screen or an airport.
+
+Fuel Time
+---------
+Once under your control, the 7th column shows the amount of time remaining in which must reach its exit point. If late, the aircraft will run out of fuel before reaching its ultimate destination.
+
+Entry Time
+----------
+The 8th column shows the amount of time remaining, in minutes and seconds, until the aircraft enters your sector or is available to take off from an airport.
+
+Preview Aircraft Entry
+=====================
+To preview the aircraft that are scheduled to enter your sector during the next minute, place the cursor along the perimeter of the radar screen near the compass point of interest and press the mouse button.  A small window will appear in the middle of the screen that shows any aircraft that will enter at that compass point during the next minute.  The aircraft is indicated by its entry altitude and aircraft type.  An entry of "0:30 -> 6 J" means that a jet will enter at altitude 6 in 30 seconds.
+
+Aircraft Control Commands
+=========================
+The Aircraft Control Commands allow you to issue orders to the currently selected aircraft.  To select an aircraft, use the mouse and click on either the image of the aircraft or airport on the radar screen or a line on the air traffic schedule.
+
+If a position on the radar screen is selected that contains multiple aircraft, they will all be highlighted on the air traffic schedule.  The control commands are only active when a single aircraft is selected.
+
+Aircraft Heading Commands
+=========================
+The heading commands allow turns of 45°, 90°, 135° and 180° to the right or left relative to the current heading.  The “∆” command causes an aircraft to cancel all turns and continue straight at its current heading.
+
+The “∞” command causes an aircraft to  circle.  It can only be used on aircraft already turning.  The current direction of turn determines the circling direction. 
+
+An aircraft turns 45°  per move.  It moves at its initial heading before turning.  An aircraft turning 90°  will move straight, turn 45°, move straight again, and turn 45°.
+
+Aircraft Altitude Commands
+=========================
+The altitude commands instruct an aircraft to change to a specified altitude (levels 0 to 8).  An aircraft ascends or descends 1 level per move on the radar screen.
+
+An aircraft begins to change altitude immediately after receiving a command and will ascend or descend 1 level in its next move.
+
+The “L” command causes an aircraft to land at its destination airport if its path crosses it.  It is only active when an aircraft is at or commanded to an altitude of level 1 and is canceled by any other command issued to the aircraft.
+
+Simulate Menu
+=============
+The Simulate menu presents these commands:
+
+• With New Schedule
+• With Current Schedule
+• End Simulation
+
+"With New Schedule" creates a new schedule based on the current simulation options.
+"With Current Schedule" uses the schedule that was in the most recent simulation or load schedule command.
+
+When the simulation starts, the schedule for your shift is shown.  You must direct each aircraft to its assigned destination and minimize the number of near misses to maximize your score.
+
+While playing, only the "End Simulation" option is available.  Selecting it terminates the current simulation and will allow a new simulation to be started.
+
+Clicking the small Pause box to the upper left of the radar screen will suspend the simulation without penalty.
+
+Options Menu
+============
+These selections may be available:
+
+• Set Simulation Options
+• Show High Scores
+• Playback Last Simulation
+• Toggle Conflict Blinking
+• Toggle Radar Sweep
+• Set Sound Effects
+• Set Icon Colors 	(Only on color Macs)
+• Set Text Options	(Only on larger screen Macs - bigger than Plus/SE screen)
+
+Set Simulation Options
+---------------------
+Eleven difficulty level parameters can be altered:
+
+• Number of aircraft in your schedule
+• Amount of time in your shift
+• Number of airports in your schedule
+• Required aircraft altitude separation
+• Required aircraft distance separation
+• Number of hill obstacles
+• Number of tower obstacles
+• Size of restricted flight area
+• Current weather conditions
+• Whether propeller planes are included in your schedule
+• Whether helicopters are included in your schedule
+
+Save Options will keep your new settings as defaults.
+Print Screen will print the contents of the screen.
+
+High Score Display
+-----------------
+Selecting the Show High Score item from the command menu will display the 10 highest scores achieved.  Only positive scores are considered.   If you achieve a score in the top 10, you will be asked to enter your name and it will be included on the list.
+
+The Clear Scores button will allow you to clear the list.
+
+Print Screen will print the contents of the screen.
+
+Playback Last Simulation
+-----------------------
+The Playback option will replay the last simulation allowing you to see where things went wrong.
+
+During the playback, any aircraft that did not exit at their assigned exit points will be enclosed in a square so that you can concentrate on those that did not exit correctly.
+
+Click on the shift clock or turn timer to advance the clock.  The Pause box can be used to stop the clock without obstructing the radar screen.
+
+Clicking on any control in the Control Panel will give you a chance to take over and finish the simulation.  This allows you to recover from any fatal errors you make.
+
+Each time you take back the controls, a 1% penalty is imposed on your final score. If you playback 5 times, each time avoiding a new problem to improve your performance, your score will be 95% of what it would be if you played the simulation from the beginning.
+
+The Playback option will not be available if the record buffer overflows, which is a very unlikely event.
+
+Toggle Conflict Blinking
+----------------------
+When an aircraft is in a conflict situation (too close to another, in a restricted zone, or in a thunder storm), it will blink on the screen to alert you to the problem.  The blinking can be turned off if you find it distracting.
+
+Toggle Radar Sweep
+------------------
+Normally, a "radar sweep" line revolves around the screen during the simulation to give the feel of a real radar.  If you find it distracting, you can turn it off.
+
+Set Sound Effects
+----------------
+Allows all of the sound effects in the game to be turned on or off.
+
+Set Icon Colors
+--------------
+On a color Macintosh, you can select the colors for the different objects (aircraft, airports, and obstacles) that appear on the radar screen.
+
+Set Text Options
+---------------
+On a large screen Macintosh, the bottom of the screen can give a text description of the events that are occurring in the simulation.  You can use the Set Text Option dialog to determine which messages are to appear at the bottom of the screen.
+
+File Menu
+=========
+The file menu presents these commands:
+
+• Load Schedule
+• Save Schedule
+• Print Screen
+• Print Poster
+• Print Schedule
+• Quit
+
+The Save Schedule command saves the current schedule as a separate document.  The Load Schedule command loads one of these documents as the current schedule.
+
+Print Screen will print the current contents of the screen.  Print Poster will print an enlargement of the screen in twelve sections that can form a poster suitable for framing.  Print Schedule will print a listing of the entire current schedule.
+
+Quit ends the session of Air Traffic Controller.
+
+Speed Menu
+==========
+The speed menu presents these commands:
+
+• Faster
+• Fastest
+
+Selecting either of these commands causes the simulation to proceed automatically at a quicker pace until you press the mouse button or a key.  It is useful for playbacks or when there is a large interval until the next aircraft enters the screen.
+
+Simulation Rules
+===============
+If you cause an aircraft to crash, the simulation ends immediately. An aircraft can crash by:
+
+• Crashing into another aircraft in mid air
+• Running out of fuel in mid air
+• Landing without an FAA approved airport 
+   (except helicopters, which land safely and score a near miss)
+• Landing at an airport from the wrong direction 
+   (except helicopters, which land safely without any effect on the score)
+• Hitting a hill or a tower
+   (while at an altitude that is equal to or less than that of the hill or tower)
+
+A “near miss” event is registered whenever two aircraft are not separated by either their required altitude or distance spacing or when a aircraft flies through a restricted area.  The number of near misses reduces your score. Flying through a thunderstorm is similar to a near miss in that it counts against your score, but not nearly as much as a near miss.
+
+The Shift Clock, located to the upper right of the radar screen, indicates the amount of time left in your shift. All aircraft must be accounted for by the time your shift ends.  The Turn Timer, located to the lower right of the radar screen, counts off the 15 seconds between turns.  You can use it to determine how much time remains until the aircraft 'move'. The Score Display to the lower left of the radar screen shows your current simulation score.
+Simulation Scoring
+Using the difficulty level settings, a points per aircraft value is calculated and shown on the Set Options display.  The formula used to calculate this value is:
+
+ 
+
+ 
+
+The zone values are 0, 4, 16, 36 for none, small, medium, large.  The weather values are 0, 8, 15 for good, bad, deadly.  If propeller planes and helicopters are included their value is 7 each, otherwise it is 0.
+
+The maximum number of points per aircraft is 4000; the minimum is 10.
+
+When all of the aircraft have been safely dispatched, your performance is evaluated using the following formula:
+
+ 
+
+The maximum score is 240000 (4000 points per aircraft * 60 aircraft, with no playbacks, near misses, or flying through thunderstorms). There is no minimum score (you can have as many near misses as you like).
+
+Simulation Strategy
+==================
+Obviously, you want to maximize the number of aircraft directed to their correct destinations. It is better to exit or land an aircraft at a wrong destination than to have it run out of fuel and crash.
+
+Beware of accumulating too many 'near misses' since they can lower your score very quickly. To prevent boredom, click the mouse in either the small circular turn timer or the rectangular time clock.  Each click advances the simulation one turn.
+
+Disclaimer of Warranty
+=====================
+The software and accompanying instructions for use are provided “as is” without warranty of any kind.  Further, Walter Biess does not warrant, guarantee, or make any representations regarding the use, or the results of the use of the software or accompanying instructions in terms of correctness, accuracy, reliability, currentness, or otherwise.  The entire risk as to the results and performance of the software is assumed by you.  If the software or instructions are defective, you, and not Walter Biess or his dealers, distributors, agents, or employees, assume the entire cost of all necessary servicing, repair or correction.
+
+The above are the only warranties of any kind, either expressed or implied, including but not limited to the implied warranties of merchantability and fitness for a particular purpose that are made by Walter Biess on this product.  Neither Walter Biess nor anyone else who has been involved with the creation, production, or delivery of this product shall be liable for any direct, indirect, consequential, or incidental damages even if Walter Biess or an agent of Walter Biess has been advised of the possibility of such damages.
+
+Program History
+===============
+Air Traffic Controller	1.0-3.0	1986-1987 -> Initial versions. Freeware.
+
+Air Traffic Controller	4.0	1987 -> Released as shareware.
+
+Air Traffic Control Simulator	1.0	1988 -> Published commercially by HJC Software.  Adjusted to run on Mac 512. Sound added.
+
+Near Miss	1.0-1.01	1989 -> Published commercially by Simon and Schuster.  Color features added.
+
+Air Traffic Controller	5.0	01-JAN-92 -> Freeware version released.
+
+Air Traffic Controller	5.01	28-MAR-92 -> Bug fixed that caused crashes.
+
+Air Traffic Controller	5.02	28-APR-92 -> Bug fixed that would hide the last airplane in the schedule whenever the scroll bar is enabled.  Added a checkbox in the sound options to turn off the startup airplane sounds.
+
+Air Traffic Controller	5.03	01-MAY-93 -> Bug fixed that caused crashes on black and white machines (those without color QuickDraw) which have screens larger than 512 by 342 pixels.

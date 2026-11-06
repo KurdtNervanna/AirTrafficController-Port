@@ -20,9 +20,13 @@ if not exist musashi\m68kops.c (
   cl /nologo /D_CRT_SECURE_NO_WARNINGS /Fo:build\ /Fe:build\m68kmake.exe musashi\m68kmake.c >nul || (echo m68kmake build failed & exit /b 1)
   build\m68kmake.exe musashi musashi\m68k_in.c >nul || (echo m68kmake failed & exit /b 1)
 )
+rem The game (data\ATC.rsrc) is compiled into the program.
+cl /nologo /Fo:build\ /Fe:build\bin2c.exe tools\bin2c.c >nul || (echo bin2c build failed & exit /b 1)
+build\bin2c.exe data\ATC.rsrc build\atc_data.c atc_app || (echo embedding the game failed & exit /b 1)
+build\bin2c.exe data\Manual.txt build\atc_manual.c atc_manual || (echo embedding the manual failed & exit /b 1)
 rc /nologo /fo build\atc.res platform\windows\atc.rc >nul || (echo rc failed & exit /b 1)
-cl /nologo /O2 /Zi /W3 /wd4244 /wd4267 /wd4018 /wd4146 /D_CRT_SECURE_NO_WARNINGS /DATC_VERSION=\"%V%\" /I musashi /Fo:build\ /Fe:build\ATC.exe ^
-   src\main.c src\trap.c src\mem.c src\rsrc.c src\qd.c src\rgn.c src\font.c src\wm.c src\menu.c src\ctl.c src\dlg.c src\evt.c src\fs.c src\pack.c src\plat.c src\fonts_builtin.c src\host_win.c src\audio_win.c ^
+cl /nologo /O2 /MT /Zi /W3 /wd4244 /wd4267 /wd4018 /wd4146 /D_CRT_SECURE_NO_WARNINGS /DATC_EMBED_GAME /DATC_VERSION=\"%V%\" /I musashi /Fo:build\ /Fe:build\ATC.exe ^
+   build\atc_data.c build\atc_manual.c src\main.c src\trap.c src\mem.c src\rsrc.c src\qd.c src\rgn.c src\font.c src\wm.c src\menu.c src\ctl.c src\dlg.c src\evt.c src\fs.c src\pack.c src\plat.c src\fonts_builtin.c src\host_win.c src\audio_win.c ^
    musashi\m68kcpu.c musashi\m68kops.c musashi\m68kdasm.c musashi\softfloat\softfloat.c ^
    build\atc.res /link user32.lib gdi32.lib winmm.lib comdlg32.lib shell32.lib ole32.lib /SUBSYSTEM:CONSOLE /DEBUG /OPT:REF
 if errorlevel 1 (echo BUILD FAILED & exit /b 1)

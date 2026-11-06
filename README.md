@@ -18,7 +18,7 @@ like it did on a 1993 Macintosh, in a resizable window on a modern computer.
 ## Contents
 
 - [Download](#download)
-- [Getting the game files](#getting-the-game-files)
+- [The game](#the-game)
 - [How to play](#how-to-play)
 - [Screenshots](#screenshots)
 - [What works](#what-works)
@@ -29,68 +29,51 @@ like it did on a 1993 Macintosh, in a resizable window on a modern computer.
 
 ## Download
 
-Get the latest build from the [Releases](../../releases/latest) page.
+Get the latest build from the [Releases](../../releases/latest) page. **Everything is in
+one file** — the game is built into the program, so there is nothing else to download,
+install or set up.
 
-| System | File | First run |
+| System | Download | To play |
 |---|---|---|
-| **Windows** 10/11 (x64) | `ATC-Windows-x64.zip` | Unzip anywhere and run `ATC.exe`. |
-| **macOS** 10.13 or later, Apple silicon and Intel | `ATC-macOS-universal.dmg` | Drag *Air Traffic Controller* to Applications. The app is not notarized, so the first time **right-click it and choose Open** (or run `xattr -dr com.apple.quarantine "/Applications/Air Traffic Controller.app"`). |
-| **Linux** x86_64 | `ATC-Linux-x86_64.AppImage` or `ATC-Linux-x86_64.tar.gz` | `chmod +x ATC-Linux-x86_64.AppImage` and run it, or unpack the tarball and run `./atc`. Opening and saving schedules uses `zenity` or `kdialog`. |
+| **Windows** 10 or 11, 64-bit | `ATC-Windows-x64.exe` | Run it. (`ATC-Windows-x64.zip` is the same program with the manual and this README.) |
+| **macOS** 10.13 or later, Apple silicon and Intel | `ATC-macOS-universal.dmg` or `.zip` | Drag *Air Traffic Controller* to Applications and open it. The app is not notarized, so the first time **right-click it and choose Open** (or run `xattr -dr com.apple.quarantine "/Applications/Air Traffic Controller.app"`). |
+| **Linux** x86_64 | `ATC-Linux-x86_64.AppImage` | `chmod +x ATC-Linux-x86_64.AppImage`, then run it. (`ATC-Linux-x86_64.tar.gz` holds a plain `atc` binary, desktop entry, icon and manual.) Opening and saving schedules uses `zenity` or `kdialog`. |
 
-**The downloads do not contain the game itself** — see the next section. On first launch
-the program asks for the folder that holds it and remembers it.
+The Windows program needs no runtime libraries; the macOS and Linux programs have SDL
+built in.
 
-## Getting the game files
+## The game
 
-You need one file from the classic Mac world, and can add a second:
-
-| File | |
-|---|---|
-| **Air Traffic Controller 5.03** (required) | The application itself. It was released as freeware in 1992–93 and is available from classic Macintosh software archives (it is usually distributed as `Air Traffic Controller 5.03.sit`). |
-| **A System 6 System file** (optional) | The *System* file from any System 6 installation (6.0.x). If it is in the same folder, the game uses Apple's original bitmap fonts from it. Without it, the port uses its own built-in fonts (see [Fonts](#fonts)). |
-
-Classic Mac files keep their contents in a *resource fork*, which modern systems don't
-store natively. Any of these three forms works, and the names don't matter — the program
-recognises each file by its contents:
-
-* a **MacBinary** file (`.bin`),
-* an **AppleDouble** file (the `._name` or `name.rsrc` companion that unpacking tools write),
-* a **raw resource fork** (for example `ATC.rsrc`).
-
-**From the original `.sit` archive** (with [The Unarchiver](https://theunarchiver.com/)'s
-command-line tool):
-
-```sh
-unar -k visible "Air Traffic Controller 5.03.sit"
-# -> "Air Traffic Controller 5.03/Air Traffic Controller 5.03.rsrc"  (AppleDouble: use it as is)
-```
-
-**A System file from a disk image** (optional; with [hfsutils](https://www.mars.org/home/rob/proj/hfs/)):
-
-```sh
-hmount "System Tools.dsk"
-hcd "System Folder"
-hcopy -m System System.bin          # MacBinary: use it as is
-humount
-```
-
-From an emulator such as Mini vMac or Basilisk II you can also export both files as
-MacBinary. `tools/rfork.py extract <in> <out>` converts any of the forms to a raw fork.
-
-Put the file (or both) in one folder and start the game. It looks, in order, in a folder named on
-the command line, in `$ATC_GAME`, in a `game` folder next to the program, in
-`<user data folder>/game`, and in the folder you picked last time.
+**Air Traffic Controller 5.03** was released by its author, Walter J. Biess, as freeware;
+its terms allow it to be passed on free of charge together with its manual. It is
+included in this repository as [`data/ATC.rsrc`](data) (the application's resource fork)
+with its manual, [`data/Manual.txt`](data/Manual.txt), and both are compiled into every
+build. The program also writes the manual into its save folder the first time it runs.
 
 ### Fonts
 
 The game draws its text in three classic Mac bitmap fonts: Chicago 12 (menus, dialogs,
-buttons), Monaco 9 (the schedule) and Monaco 12 (clock, score, wind). The port includes
-its own stand-ins for them — **Tower 12**, **Radar 9** and **Radar 12** — drawn from
-scratch for this project as pixel art in [`fonts/`](fonts) and compiled into the program
-by `tools/build_fonts.py`. Every character has exactly the advance width of the font it
-replaces, so all text lands on the same pixels and the layout is unchanged. With a System
-file present the original Apple fonts are used instead; `ATC_BUILTIN_FONTS=1` forces the
-built-in ones.
+buttons), Monaco 9 (the schedule) and Monaco 12 (clock, score, wind). Apple's fonts are
+not included; instead the port has its own stand-ins — **Tower 12**, **Radar 9** and
+**Radar 12** — drawn from scratch for this project as pixel art in [`fonts/`](fonts) and
+compiled into the program by `tools/build_fonts.py`. Every character has exactly the
+advance width of the font it replaces, so all text lands on the same pixels and the
+layout is unchanged.
+
+To see Apple's originals instead, put a System 6 *System* file (raw resource fork,
+AppleDouble or MacBinary — for example `hcopy -m System System.bin` from a disk image
+with [hfsutils](https://www.mars.org/home/rob/proj/hfs/)) next to the program, or in the
+user data folder, named `System.rsrc`, `System` or `System.bin`. `ATC_BUILTIN_FONTS=1`
+forces the built-in fonts.
+
+### Using another copy of the game
+
+`ATC <folder>` (or `ATC_GAME=<folder>`) runs a copy of the game from a folder instead of
+the built-in one. The folder holds the application's resource fork in any of three forms —
+a **MacBinary** file, an **AppleDouble** file (what `unar -k visible` writes when
+unpacking the original `.sit`), or a **raw resource fork** — and, optionally, a System
+file for its fonts; files are recognised by their contents, whatever their names.
+`tools/rfork.py extract <in> <out>` converts any of the forms to a raw fork.
 
 ## How to play
 
@@ -147,7 +130,7 @@ separation, obstacles, restricted zone and weather; the full manual comes with t
 
   | System | Location |
   |---|---|
-  | Windows | next to the game folder; if that isn't writable, `%APPDATA%\Air Traffic Controller\save` |
+  | Windows | a `save` folder next to the program; if that isn't writable, `%APPDATA%\Air Traffic Controller\save` |
   | macOS | `~/Library/Application Support/Air Traffic Controller/save` |
   | Linux | `~/.local/share/air-traffic-controller/save` (or under `$XDG_DATA_HOME`) |
 
@@ -243,8 +226,9 @@ Environment variables switch on logging and testing aids:
 ## Credits and legal
 
 * **Air Traffic Controller** © 1986–1993 Walter J. Biess. Released as freeware; its own
-  terms allow free distribution together with its manual. This project does not include
-  the game and is not affiliated with its author.
+  terms allow free distribution together with its manual, and it is included here on
+  those terms (see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)). This project is not
+  affiliated with its author.
 * **Macintosh system fonts** © Apple. They are not included; the program can read them
   from a System file you provide. The built-in fonts (Tower 12, Radar 9, Radar 12) are
   original work of this project.
@@ -256,5 +240,6 @@ Environment variables switch on logging and testing aids:
 ## License
 
 The port's own code and its built-in fonts are released under the [MIT License](LICENSE).
-It does not cover the game or Apple's fonts, which are not included, or the bundled third-party components,
+It does not cover the game (included under its author's own freeware terms), Apple's
+fonts (not included) or the bundled third-party components,
 which keep their own licences; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

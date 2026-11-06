@@ -115,6 +115,7 @@ int      mm_is_handle(unsigned h);
 
 /* ---- resources (rsrc.c) ------------------------------------------------------------- */
 int      rs_open_app(const char *path, const char *overlay);
+int      rs_open_app_mem(const unsigned char *data, unsigned size, const char *overlay);
 int      rs_open_system(const char *path);
 unsigned rs_get(unsigned type, int id);            /* searches the chain from CurMap */
 unsigned rs_get1(unsigned type, int id);           /* current file only             */
